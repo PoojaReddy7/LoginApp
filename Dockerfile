@@ -3,12 +3,14 @@
 # ENTRYPOINT ["java","-jar","/app.jar"]
 
 
-FROM eclipse-temurin:17-jdk
-
+# Stage 1: Build
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
-
 COPY . .
+RUN mvn clean package -DskipTests
 
-RUN ./mvnw clean install || mvn clean install
-
-CMD ["java","-jar","target/loginapp-0.0.1-SNAPSHOT.jar"]
+# Stage 2: Run
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+CMD ["java","-jar","app.jar"]
