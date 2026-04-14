@@ -23,22 +23,19 @@ public class AuthController {
         return "signup";
     }
 
-    @PostMapping("/signup")
+   @PostMapping("/signup")
     @ResponseBody
-    public String signup(@RequestParam String email, @RequestParam String password) {
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(password);
+    public String signup(@RequestBody User user) { // Changed to @RequestBody
         repo.save(user);
         return "Signup Successful";
     }
 
     @PostMapping("/login")
     @ResponseBody
-    public String login(@RequestParam String email, @RequestParam String password) {
-        User user = repo.findByEmail(email);
+    public String login(@RequestBody User user) { // Changed to @RequestBody
+        User existingUser = repo.findByEmail(user.getEmail());
 
-        if (user != null && user.getPassword().equals(password)) {
+        if (existingUser != null && existingUser.getPassword().equals(user.getPassword())) {
             return "Login Successful";
         } else {
             return "Invalid Credentials";
